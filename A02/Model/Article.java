@@ -1,25 +1,31 @@
 package Model;
+import java.io.Serializable;
 
-public class Article {
+public class Article implements Serializable {
 
     String nomArticle;
     float nombreUnitats;
     String tipusUnitat;
+    float preuArticle;
 
     public Article () {
     
     }
 
-    public Article(String nomArticle, float nombreUnitats, String tipusUnitat) {
+    public Article(String nomArticle, float nombreUnitats, String tipusUnitat, float preuArticle) {
 
         ValidatenomArticle(nomArticle);
         ValidateUnitats(nombreUnitats);
         ValidatetipusUnitat(tipusUnitat);
+        ValidatepreuArticle(preuArticle);
+
 
 
         this.nomArticle = nomArticle;
         this.nombreUnitats = nombreUnitats;
         this.tipusUnitat = tipusUnitat;
+        this.preuArticle = preuArticle;
+        
 
     }
 
@@ -56,14 +62,25 @@ public class Article {
         this.nomArticle = nomArticle;
     }
 
+     public String getPreuArticle() {
+        return preuArticle;
+    }
+    
+    public void setPreuArticle(String preuArticle) {
+
+        ValidatepreuArticle(preuArticle);
+        
+        this.preuArticle = preuArticle; 
+    }
+
     @Override
     public String toString() { 
-        return "Article [article=" + nomArticle + ", nombreUnitats=" + nombreUnitats + ", tipusUnitat=" + tipusUnitat
+        return "Article [article=" + nomArticle + ", nombreUnitats=" + nombreUnitats + ", tipusUnitat=" + tipusUnitat  + ", preuArticle=" + preuArticle
                 + "]";
     }
 
     public String toCSV() {
-        return nomArticle + ";" + nombreUnitats + ";" + tipusUnitat + ";" ;
+        return nomArticle + ";" + nombreUnitats + ";" + tipusUnitat + ";" + preuArticle + ";" ;
     }
 
     private void ValidateUnitats(float nombreUnitats) {

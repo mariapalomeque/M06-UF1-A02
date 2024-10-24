@@ -38,8 +38,12 @@ public class GestioArticle {
             System.out.println("Quina unitat (indicar Kg, g, ... o simplement u per unitats)? :");
 
             String unitat = reader.readLine();
+
+            System.out.println("Quin preu te l'article? :");
+
+            String preuTotal = reader.readLine();
     
-            Article article = new Article(nomArticle,quantitat, unitat);
+            Article article = new Article(nomArticle,quantitat, unitat, preuTotal);
     
             LlistaArticle.add(article);
 
