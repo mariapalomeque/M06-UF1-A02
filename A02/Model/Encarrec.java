@@ -1,105 +1,87 @@
 package Model;
+
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Encarrec {
+public class Encarrec implements Serializable {
+    private int id;
+    private String nomCli;
+    private String telCli;
+    private String dataEncarrec;
+    private ArrayList<Article> articles;
+    private float preuTotal;
 
-    int idEncarrec;
-    String nomCli;
-    String telCli;
-    String dataEncarrec;
-    float preuTotal;
-    ArrayList<Article> articles;
-
-    
-    public Encarrec(int idEncarrec, ifString nomCli, String telCli, String dataEncarrec, float preuTotal, ArrayList<Article> articles) {
-        this.idEncarre = idEncarre;
+    public Encarrec(int id, String nomCli, String telCli, String dataEncarrec, ArrayList<Article> articles) {
+        this.id = id;
         this.nomCli = nomCli;
         this.telCli = telCli;
         this.dataEncarrec = dataEncarrec;
-        this.preuTotal = preuTotal;
         this.articles = articles;
+        this.preuTotal = calcularPreuTotal();
     }
 
-    public String getidEncarrec() {
-        return idEncarrec;
+    public int getId() {
+        return id;
     }
 
-
-    public void setidEncarrec(String idEncarrec) {
-        this.idEncarrec = idEncarrec;
+    public void setId(int id) {
+        this.id = id;
     }
-
-
 
     public String getNomCli() {
         return nomCli;
     }
 
-
     public void setNomCli(String nomCli) {
         this.nomCli = nomCli;
     }
-
 
     public String getTelCli() {
         return telCli;
     }
 
-
     public void setTelCli(String telCli) {
         this.telCli = telCli;
     }
-
-
-    
 
     public String getDataEncarrec() {
         return dataEncarrec;
     }
 
-
     public void setDataEncarrec(String dataEncarrec) {
         this.dataEncarrec = dataEncarrec;
-    }
-
-    public String getpreuTotal() {
-        return preuTotal;
-    }
-
-    public void setpreuTotal(String preuTotalc) {
-        this.dataEncarrec = preuTotal;
     }
 
     public ArrayList<Article> getArticles() {
         return articles;
     }
 
-
     public void setArticles(ArrayList<Article> articles) {
         this.articles = articles;
+        this.preuTotal = calcularPreuTotal(); 
     }
 
-    
+    public float getPreuTotal() {
+        return preuTotal;
+    }
 
+    private float calcularPreuTotal() {
+        float total = 0;
+        for (Article article : articles) {
+            total += article.getPreu() * article.getQuantitat();
+        }
+        return total;
+    }
 
     @Override
     public String toString() {
-        return "Encarrec [idEncarrec=" + idEncarrec + nomCli=" + nomCli + ", telCli=" + telCli + ", dataEncarrec=" + dataEncarrec + ", preuTotal=" + preuTotal + ", articles="
-                + articles + "]";
+        return "Encarrec{" +
+                "id=" + id +
+                ", nomCli='" + nomCli + '\'' +
+                ", telCli='" + telCli + '\'' +
+                ", dataEncarrec='" + dataEncarrec + '\'' +
+                ", preuTotal=" + preuTotal +
+                ", articles=" + articles +
+                '}';
     }
-
-    public String toCSV() {
-        StringBuilder cliDet = new StringBuilder();
-        cliDet.append(idEncarrec).append(";")
-              .append(nomCli).append(";")
-              .append(telCli).append(";")
-              .append(dataEncarrec).append(";");
-              .append(preuTotal).append(";")
-    
-        // Usar StringBuilder para añadir cada artículo
-        articles.forEach(article -> cliDet.append(article.toCSV()));
-    
-        return cliDet.toString();
-    }
-
 }

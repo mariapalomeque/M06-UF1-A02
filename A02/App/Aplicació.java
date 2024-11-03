@@ -4,186 +4,142 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-
 import Model.Article;
+import Model.Encarrec;
 
 public class Aplicació {
 
+    private static ArrayList<Encarrec> encarrecs = new ArrayList<>();
+    private static int nextId = 1; 
 
     public static void main(String[] args) {
-
         System.out.println("GESTIO D'ENCARRECS");
         System.out.println("======================");
-
-        MainMenu();
-
-        DemanarOpcio();
-
         
+        MainMenu();
     }
 
     public static void MainMenu() {
+        boolean seguir = true;
+        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 
-        System.out.println("Opcions disponibles");
-        System.out.println("");
-        System.out.println("1. Afegir nous encàrrecs");
-        System.out.println("2. Mostrar per pantalla els encàrrecs");
-        System.out.println("3. Sortir");
-        System.out.println("");
-        System.out.print("Quina opció tries?: ");
-    }
+        while (seguir) {
+            System.out.println("Opcions disponibles");
+            System.out.println("");
+            System.out.println("1. Afegir nous encàrrecs");
+            System.out.println("2. Modificar encàrrec");
+            System.out.println("3. Mostrar per pantalla els encàrrecs");
+            System.out.println("4. Guardar encàrrec en fitxer");
+            System.out.println("5. Sortir");
+            System.out.println("");
+            System.out.print("Quina opció tries?: ");
 
-    public static void DemanarOpcio() {
+            try {
+                String opcio = reader.readLine();
 
-        boolean ValidOpt = true;
-        
-        try (BufferedReader reader1 = new BufferedReader(new InputStreamReader(System.in))) {
-            
-            String opcio = reader1.readLine();
+                switch (opcio) {
+                    case "1":
+                        AfegirDadesEncarrec(reader);
+                        break;
 
-            switch (opcio) {
-                case "1":
-                    System.out.println("opcio triada és 1");
-                    AfegirDadesEncarrec(reader1);
-                    break;
+                    case "2":
+                        ModificarEncarrec(reader);
+                        break;
 
-                case "2":
-                    System.out.println("opcio triada és 2");
-                    MostrarEncarrec(reader1);
-                    break;
-                
-                case "3":
+                    case "3":
+                        MostrarEncarrec(reader);
+                        break;
 
-                    break;
+                    case "4":
+                        GuardarEncarrecFitxer(reader);
+                        break;
 
-            
-                default:
-                    System.out.println("Opció no vàlida");
-                    ValidOpt = false;
-            }
+                    case "5":
+                        GuardarEncarrrecAleatori();
+                        seguir = false; 
+                        System.out.println("Que tinguis un bon dia!");
+                        break;
 
-            if (!(opcio.equals("3"))) {
+                    default:
+                        System.out.println("Opció no vàlida");
+                }
 
-                String continuar = "";
-
-                if (ValidOpt) {
+                if (seguir) {
                     System.out.println("Vols fer cap altra acció? Indicar S en cas afirmatiu");
-                    continuar = reader1.readLine(); 
+                    String continuar = reader.readLine();
+                    if (!continuar.matches("[Ss]")) {
+                        seguir = false; 
+                        System.out.println("Que tinguis un bon dia!");
+                    }
                 }
 
-                if ((continuar.matches("[Ss]")) || (!(ValidOpt))) {
-                    
-                    MainMenu();
-
-                    DemanarOpcio();
-                } else {
-                    System.out.println("Que tinguis un bon dia!");
-                }
-
-            } else {
-                System.out.println("Que tinguis un bon dia!");
+            } catch (IOException e) {
+                System.err.println("Error de entrada/salida: " + e.getMessage());
             }
-
-
-
-        } catch (IOException e) {
-
-            e.printStackTrace();
-        } 
+        }
     }
 
     public static void AfegirDadesEncarrec(BufferedReader reader) throws IOException {
-
         System.out.println("Introdueix les dades de l'encarrec: ");
-
-        System.out.println("Nom del client: ");
+        System.out.print("Nom del client: ");
         String nomCli = reader.readLine();
-
-        System.out.println("Telèfon del client: ");
+        System.out.print("Telèfon del client: ");
         String telCli = reader.readLine();
-
-        System.out.println("Per quin dia el vols preparat (Dia (DD)/ Mes (MM) / Any (AAAA)?: ");
+        System.out.print("Data de l'encarrec: ");
         String dataEncarrec = reader.readLine();
 
-//Cridem a la classe encarregada de gestionar els articles dels encàrrecs        
-        GestioArticle articleList = new GestioArticle();
+        ArrayList<Article> articles = new ArrayList<>();
+        boolean afegirArticle = true;
 
-//Cridem al mètode de la classe que demana les dades per poder afegir els articles
-        ArrayList<Article> articles = articleList.AfegirArticles(reader);
+        while (afegirArticle) {
+            System.out.println("Introdueix les dades de l'article: ");
+            System.out.print("Nom de l'article: ");
+            String nomArticle = reader.readLine();
+            System.out.print("Quantitat: ");
+            float quantitat = Float.parseFloat(reader.readLine());
+            System.out.print("Unitat: ");
+            String unitat = reader.readLine();
+            System.out.print("Preu: ");
+            float preu = Float.parseFloat(reader.readLine());
 
-//Fem l'escriptura als fitxers
-        EscriureFitxers(reader, nomCli, telCli, dataEncarrec, articles);
+            articles.add(new Article(nomArticle, quantitat, unitat, preu));
 
-    }
-
-    public static void EscriureFitxers(BufferedReader reader, String nomCli, String telCli, String dataEncarrec, ArrayList<Article> articles) 
-        throws IOException {
-
-        String extensio = "";
-
-        String folder = "C:\\Users\\accesadades\\";
-
-        String fileName = folder + "encarrecs_client_" + nomCli + "_"+ System.currentTimeMillis() + extensio;
-
-        System.out.println("En quin format vols escriure el fitxer?: ");
-        System.out.println("1. text albarà");
-        System.out.println("2. csv una línia");
-        System.out.println("3. Binari");
-
-        String tipusFich = reader.readLine();
-
-        UtilWriteFitxer uw1 = new UtilWriteFitxer();
-
-        switch (tipusFich) {
-            case "1":
-                extensio = ".txt";
-                fileName = fileName.concat(extensio);
-                uw1.TextMultiLinea(nomCli, telCli, dataEncarrec, articles, fileName);
-                break;
-            
-            case "2": 
-                // Encarrec encarrec = new Encarrec(nomCli, telCli, dataEncarrec, articles);
-                // csvLineaObjEn(encarrec, fileName);
-                extensio = ".csv";
-                fileName = fileName.concat(extensio);
-                uw1.csvLinea(nomCli, telCli, dataEncarrec, articles, fileName);
-                break;
-
-            case "3":
-                extensio = ".dat";
-                fileName = fileName.concat(extensio);
-                uw1.binari(nomCli,telCli,dataEncarrec,articles,fileName);
-                break;
-        
-            default:
-                break;
+            System.out.print("Vols afegir un altre article? (S/N): ");
+            String resposta = reader.readLine();
+            if (!resposta.equalsIgnoreCase("S")) {
+                afegirArticle = false;
+            }
         }
 
+        Encarrec enc = new Encarrec(nextId++, nomCli, telCli, dataEncarrec, articles);
+        encarrecs.add(enc);
+        System.out.println("Encarrec afegit amb èxit.");
+    }
+
+    public static void ModificarEncarrec(BufferedReader reader) throws IOException {
+       
     }
 
     public static void MostrarEncarrec(BufferedReader reader) throws IOException {
-
-        String folder = "C:\\Users\\accesadades\\";
-
-        System.out.println("Quin tipus de fitxer voleu obrir?");
-        System.out.println("1. Fitxer .csv");
-        System.out.println("2. Fitxer binari .dat");
-
-        String opcio = reader.readLine();
-        
-        System.out.println("Especifiqueu el nom del fitxer (i sols el nom) que voleu obrir sense la seva extensió");
-        System.out.println("Assegureu que el fitxer està a la carpeta: " + folder);
-
-        String fileName = reader.readLine();
-
-        UtilReadFitxer ur1 = new UtilReadFitxer();
-
-        if (opcio.equals("1")) {
-            ur1.FormatCSV(folder, fileName);
-        } else if (opcio.equals("2")) {
-            ur1.FormatBinari(folder, fileName);
+        System.out.println("Llista d'encarrec:");
+        for (Encarrec enc : encarrecs) {
+            System.out.println(enc);
         }
-
     }
-    
+
+    public static void GuardarEncarrecFitxer(BufferedReader reader) throws IOException {
+        System.out.print("Introdueix el nom del fitxer per guardar: ");
+        String fileName = reader.readLine();
+        UtilWriteFitxer util = new UtilWriteFitxer();
+        for (Encarrec enc : encarrecs) {
+            util.TextMultiLinea(enc.getNomCli(), enc.getTelCli(), enc.getDataEncarrec(), enc.getArticles(), fileName);
+        }
+        System.out.println("Encarrec(s) guardat(s) en fitxer.");
+    }
+
+    public static void GuardarEncarrrecAleatori() {
+        UtilWriteFitxer util = new UtilWriteFitxer();
+        util.escriureEncarrrecAleatori(encarrecs, "encarrecs.dat");
+        System.out.println("Encàrrecs guardats aleatòriament en el fitxer.");
+    }
 }

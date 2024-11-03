@@ -1,103 +1,56 @@
 package App;
 
-import java.io.BufferedWriter;
-import java.io.DataOutputStream;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.ArrayList;
-
 import Model.Article;
 import Model.Encarrec;
+
+import java.io.*;
+import java.util.ArrayList;
 
 public class UtilWriteFitxer {
 
     public void TextMultiLinea(String nomCli, String telCli, String dataEncarrec, ArrayList<Article> articles, String fileName) {
-    /* Aquest mètode s'encarrega d'agafar els detalls de l'encarrec i formatar-lo a un fitxer pla,
-     * el qual no és un csv sinó una mena de comprovant pel client
-     */
-
-        try (BufferedWriter bw1 = new BufferedWriter(new FileWriter(fileName))) {
-            
-            bw1.write("Nom del client: " + nomCli);
-            bw1.newLine();
-            bw1.write("Telefon del client: " + telCli);
-            bw1.newLine();
-            bw1.write("Data de l'encarrec: " + dataEncarrec);
-            bw1.newLine();
-            bw1.write(String.format("%-15s %-10s %-15s%n", "Quantitat","Unitats","Article"));
-            bw1.write(String.valueOf("=").repeat(15)+" " +String.valueOf("=").repeat(10)+" "+String.valueOf("=").repeat(15));
-            bw1.newLine();
-            for (Article article:articles) {
-                bw1.write(String.format("%-15s %-10s %-15s%n",article.getnombreUnitats(),article.gettipusUnitat(),article.getNomArticle()));
-                bw1.newLine();
-            }
-
-        } catch (Exception e) {
-            System.out.println("Error");
-        } 
-
-    }
-
-    public void csvLinea(String nomCli, String telCli, String dataEncarrec, ArrayList<Article> articles, String fileName) {
-    /* Aquest mètode s'encarrega d'agafar els detalls de l'encarrec i formatar-lo a un fitxer pla separat per comes (csv)
-     */
-        try (BufferedWriter bw1 = new BufferedWriter(new FileWriter(fileName))){
-
-            String csvArticles = "";
-
-            String csvLinea = nomCli + ";" + telCli + ";" + dataEncarrec + ";";
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName))) {
+            writer.write("Client: " + nomCli);
+            writer.newLine();
+            writer.write("Telèfon: " + telCli);
+            writer.newLine();
+            writer.write("Data: " + dataEncarrec);
+            writer.newLine();
+            writer.write("Articles:");
+            writer.newLine();
 
             for (Article article : articles) {
-                csvArticles =  csvArticles + 
-                            article.getNomArticle() + ";" + 
-                            article.getnombreUnitats() + ";" +
-                            article.gettipusUnitat() + ";" ;
+                writer.write(article.toString());
+                writer.newLine();
             }
 
-            bw1.write(csvLinea + csvArticles);
-
-            
-        } catch (Exception e) {
-            System.out.println("Error");
-        }
-
-    }
-
-    public void csvLineaObjEn(Encarrec encarrec, String fileName) {
-    /* Aquest mètode és una alternativa per si es fa servir una classe anomenada Encarrec, la qual 
-     * fa servir la classe Article
-     */
-        try (BufferedWriter bw1 = new BufferedWriter(new FileWriter(fileName))){
-
-            bw1.write(encarrec.toCSV());
-            
-        } catch (Exception e) {
-            System.out.println("Error");
-        }
-    }
-
-
-    public void binari (String nomCli, String telCli, String dataEncarrec, ArrayList<Article> articles, String fileName) {
-    /* Aquest mètode s'encarrega d'agafar els detalls de l'encarrec i formatar-lo a un fitxer binari
-     */
-
-        try (DataOutputStream ds1 = new DataOutputStream(new FileOutputStream(fileName))) {
-
-            ds1.writeUTF(nomCli);
-            ds1.writeUTF(telCli);
-            ds1.writeUTF(dataEncarrec);
-            
-            for (Article article:articles) {
-                ds1.writeUTF(article.getNomArticle());
-                ds1.writeFloat(article.getnombreUnitats());
-                ds1.writeUTF(article.gettipusUnitat());
-            }
-
+            System.out.println("Fitxer escrit amb èxit.");
         } catch (IOException e) {
-
-            e.printStackTrace();
+            System.err.println("Error escrivint el fitxer: " + e.getMessage());
         }
+    }
 
-    }    
+    public void escriureEncarrrecAleatori(ArrayList<Encarrec> encarrecs, String fileName) {
+        try (RandomAccessFile raf = new RandomAccessFile(fileName, "rw")) {
+            for (Encarrec enc : encarrecs) {
+                raf.writeInt(enc.getId());
+                raf.writeUTF(enc.getNomCli());
+                raf.writeUTF(enc.getTelCli());
+                raf.writeUTF(enc.getDataEncarrec());
+                raf.writeFloat(enc.getPreuTotal());
+                
+                for (Article article : enc.getArticles()) {
+                    raf.writeUTF(article.getNom());
+                    raf.writeFloat(article.getQuantitat());
+                    raf.writeUTF(article.getUnitat());
+                    raf.writeFloat(article.getPreu());
+                }
+                raf.writeUTF("/"); 
+            }
+        } catch (IOException e) {
+            System.err.println("Error guardant encàrrecs: " + e.getMessage());
+        }
+    }
+
+
 }
