@@ -24,9 +24,11 @@ public class UtilReadFitxer {
             while ((linea = bwfilInp.readLine()) != null){
 
                 contingut = linea.split(";", 0);
-                String nomCli = contingut[0];
-                String telCli = contingut[1];
-                String dataEncarrec = contingut[2];
+                int idEncarrec  = contingut[0];
+                String nomCli  = contingut[1];
+                String telCli  = contingut[2];
+                String dataEncarrec  = contingut[3];
+                float preuTotal  = contingut[4];
 
                 ArrayList<Article> articles = new ArrayList<>();
 
@@ -43,7 +45,7 @@ public class UtilReadFitxer {
                     j++;
                 }
 
-                FormatEncarrec(nomCli, telCli, dataEncarrec,articles);
+                FormatEncarrec(idEncarrec, nomCli, telCli, dataEncarrec, preuTotal, articles);
             } 
 
         } catch (FileNotFoundException fn) {
@@ -60,9 +62,12 @@ public class UtilReadFitxer {
 
         try (DataInputStream diStr1 = new DataInputStream(new FileInputStream(filInputName))) {
 
-            String nomCli = diStr1.readUTF();
-            String telCli = diStr1.readUTF();
-            String dataEncarrec = diStr1.readUTF();
+
+            int idEncarrec  = diStr1.readUTF();
+            String nomCli  = diStr1.readUTF();
+            String telCli  = diStr1.readUTF();
+            String dataEncarrec  = diStr1.readUTF();
+            float preuTotal = diStr1.readFloat();
 
             try{
 
@@ -70,11 +75,14 @@ public class UtilReadFitxer {
                     String nomArticle = diStr1.readUTF();
                     float quantitat = diStr1.readFloat();
                     String unitat = diStr1.readUTF();
-                    Article art = new Article(nomArticle,quantitat,unitat);
+                     float preu  = diStr1.readFloat();;
+                    Article art = new Article(nomArticle,quantitat,unitat,preu);
                     articles.add(art);   
+   
+
                 }
 
-                FormatEncarrec(nomCli, telCli, dataEncarrec,articles);
+                FormatEncarrec(idEncarrec, nomCli, telCli, dataEncarrec, preuTotal, articles);
 
             } catch (EOFException e) {
                 System.out.println("Final de fitxer");
@@ -91,9 +99,11 @@ public class UtilReadFitxer {
         System.out.println("DETALL DE L'ENCARREC");
         System.out.println("====================================================");
         System.out.printf(String.format("%n"));
+        System.out.println("Id encarrec: " + idEncarrec);
         System.out.println("Nom del client: " + nomCli);
         System.out.println("Telefon del client: " + telCli);
         System.out.println("Data de l'encarrec: " + dataEncarrec);
+        System.out.println("Preu de l'encarrec: " + preuTotal);
         System.out.printf(String.format("%n"));
         System.out.printf(String.format("%-15s %-10s %-15s%n", "Quantitat","Unitats","Article"));
         System.out.printf(String.valueOf("=").repeat(15)+" " +String.valueOf("=").repeat(10)+" "+String.valueOf("=").repeat(15));
